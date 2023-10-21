@@ -1,5 +1,5 @@
 class Usuario {
-  constructor(uid, nombre, posX = 0, posY = 0, conectado = true, plataforma = "Unity") {
+  constructor(uid, nombre, posX = 0, posY = 0, conectado = true, plataforma = "Web") {
     this.uid = uid;
     this.nombre = nombre;
     this.posX = posX;
