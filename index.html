@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Game</title>
+    <title>UTN Presentación 2023</title>
     <link rel="stylesheet" href="./assets/styles.css">
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-app.js"></script>
@@ -17,13 +17,23 @@
 </head>
 
 <body>
-    <div id="panel">
-        <input type="text" id="input" placeholder="Ingrese su nombre">
-        <button onclick="Entrar()">Entrar</button>
+
+    <div class="overlay" id="panel">
+        <div class="container">
+            <div>
+                <p>Ingrese su nombre</p>
+                <input type="text" id="input" placeholder="Nombre..."><br>
+                <button onclick="Entrar()">Ingresar</button>
+            </div>
+        </div>
     </div>
-    <div id="character"></div>
+
+
+    <div id="character">
+        <div class="text" id="text"></div>
+    </div>
     <div id="plantillaUsuario" class="usuario"></div>
-    <div id="text"></div>
+    <img id="control" src="./assets/sprites/dpad.png" alt="Mover">
     <script src="./assets/js/game.js"></script>
 </body>
 

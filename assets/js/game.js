@@ -47,6 +47,7 @@ const db = firebase.firestore(app);
 
 let character = document.getElementById('character');
 let plantillaUsuario = document.getElementById('plantillaUsuario');
+let control = document.getElementById('control');
 let usuarios = [];
 
 let panel = document.getElementById('panel');
@@ -61,7 +62,6 @@ function Awake() {
 
 function Entrar() {
   DoSomethingFirebase();
-  panel.style.display = "none";
 }
 
 async function DoSomethingFirebase() {
@@ -69,8 +69,10 @@ async function DoSomethingFirebase() {
     return;
   }
   panel.style.display = "none";
+  initPad();
   docRef = db.collection("usuarios").doc(input.value);
   text.textContent = input.value;
+  //Date.now()
   usr = new Usuario(input.value, input.value, 0, 0);
   await docRef.set(usr.getDictionary());
 
@@ -80,14 +82,14 @@ async function DoSomethingFirebase() {
       if (change.type === "added") {
         const nuevoUsuario = change.doc.data();
         if (usr.uid !== nuevoUsuario.uid) {
-          console.log(nuevoUsuario.toString());
+          console.log(nuevoUsuario);
           let esta = false;
           for (let i = 0; i < usuarios.length; i++) {
             if (usuarios[i].id === nuevoUsuario.uid) {
               esta = true;
               if (nuevoUsuario.conectado) {
-                usuarios[i].style.left = nuevoUsuario.posX + "px";
-                usuarios[i].style.top = nuevoUsuario.posY + "px";
+                usuarios[i].style.left = nuevoUsuario.posX + "em";
+                usuarios[i].style.top = nuevoUsuario.posY + "em";
               } else {
                 usuarios.splice(i, 1);
                 document.getElementById(nuevoUsuario.uid).remove();
@@ -101,21 +103,39 @@ async function DoSomethingFirebase() {
             let go = plantillaUsuario.cloneNode(true);
             go.id = nuevoUsuario.uid;
             go.style.position = "absolute";
-            go.style.left = nuevoUsuario.posX + "px";
-            go.style.top = nuevoUsuario.posY + "px";
+            go.style.display = "block";
+            go.style.left = nuevoUsuario.posX + "em";
+            go.style.top = nuevoUsuario.posY + "em";
+            let txt = text.cloneNode(true);
+            txt.textContent = nuevoUsuario.nombre;
             usuarios.push(go);
+            go.appendChild(txt);
             document.body.appendChild(go);
           }
         }
       }
       if (change.type === "modified") {
         const usuarioModificado = change.doc.data();
-        usuarios = usuarios.map((usuario) =>
-          usuario.id === usuarioModificado.uid ? usuarioModificado : usuario
-        );
+        console.log(usuarioModificado);
+        if (usr.uid !== usuarioModificado.uid) {
+          usuarios = usuarios.map((usuario) =>
+            usuario.id === usuarioModificado.uid ? usuarioModificado : usuario
+          );
+          // Obtener las nuevas coordenadas desde el cambio
+          const nuevaPosX = usuarioModificado.posX; // Asumiendo que el campo se llama "posX"
+          const nuevaPosY = usuarioModificado.posY; // Asumiendo que el campo se llama "posY"
+
+          // Seleccionar el elemento en el DOM
+          const elementoMovible = document.getElementById(usuarioModificado.uid);
+
+          // Actualizar las propiedades de posición en el estilo del elemento
+          elementoMovible.style.left = nuevaPosX + "em";
+          elementoMovible.style.top = nuevaPosY + "em";
+        }
       }
       if (change.type === "removed") {
         const usuarioEliminado = change.doc.data();
+        console.log(usuarioEliminado);
         usuarios = usuarios.filter((usuario) =>
           usuario.id !== usuarioEliminado.uid
         );
@@ -124,24 +144,52 @@ async function DoSomethingFirebase() {
   });
 }
 
+function initPad() {
+  control.style.display = "block";
+  character.style.display = "block";
+  control.addEventListener("click", function (event) {
+    var rect = this.getBoundingClientRect();
+    var x = event.clientX - rect.left;
+    var y = event.clientY - rect.top;
+
+    if (x >= 50 && x <= 100 && y >= 0 && y <= 50) {
+      // Acción para la flecha hacia arriba
+      console.log("Haz clic en la flecha hacia arriba");
+      Move('up');
+    } else if (x >= 0 && x <= 50 && y >= 50 && y <= 100) {
+      // Acción para la flecha hacia la izquierda
+      console.log("Haz clic en la flecha hacia la izquierda");
+      Move('left');
+    } else if (x >= 100 && x <= 150 && y >= 50 && y <= 100) {
+      // Acción para la flecha hacia la derecha
+      console.log("Haz clic en la flecha hacia la derecha");
+      Move('right');
+    } else if (x >= 50 && x <= 100 && y >= 100 && y <= 164) {
+      // Acción para la flecha hacia abajo
+      console.log("Haz clic en la flecha hacia abajo");
+      Move('down');
+    }
+  });
+}
+
 function Move(direccion) {
   switch (direccion) {
-    case Direccion.Arriba:
-      usr.posY += 0.5;
-      break;
-    case Direccion.Derecha:
-      usr.posX += 0.5;
-      break;
-    case Direccion.Abajo:
+    case 'up':
       usr.posY -= 0.5;
       break;
-    case Direccion.Izquierda:
+    case 'right':
+      usr.posX += 0.5;
+      break;
+    case 'down':
+      usr.posY += 0.5;
+      break;
+    case 'left':
       usr.posX -= 0.5;
       break;
   }
   docRef.update(usr.getDictionary());
-  character.style.left = usr.posX + "px";
-  character.style.top = usr.posY + "px";
+  character.style.left = usr.posX + "em";
+  character.style.top = usr.posY + "em";
 }
 
 // Resto del código
