@@ -85,7 +85,7 @@ async function DoSomethingFirebase() {
           console.log(nuevoUsuario);
           let esta = false;
           for (let i = 0; i < usuarios.length; i++) {
-            if (usuarios[i].id === nuevoUsuario.uid) {
+            if (usuarios[i].uid === nuevoUsuario.uid) {
               esta = true;
               if (nuevoUsuario.conectado) {
                 usuarios[i].style.left = nuevoUsuario.posX + "em";
@@ -119,7 +119,7 @@ async function DoSomethingFirebase() {
         console.log(usuarioModificado);
         if (usr.uid !== usuarioModificado.uid) {
           usuarios = usuarios.map((usuario) =>
-            usuario.id === usuarioModificado.uid ? usuarioModificado : usuario
+            usuario.uid === usuarioModificado.uid ? usuarioModificado : usuario
           );
           // Obtener las nuevas coordenadas desde el cambio
           const nuevaPosX = usuarioModificado.posX; // Asumiendo que el campo se llama "posX"
@@ -137,7 +137,7 @@ async function DoSomethingFirebase() {
         const usuarioEliminado = change.doc.data();
         console.log(usuarioEliminado);
         usuarios = usuarios.filter((usuario) =>
-          usuario.id !== usuarioEliminado.uid
+          usuario.uid !== usuarioEliminado.uid
         );
       }
     });
@@ -175,16 +175,24 @@ function initPad() {
 function Move(direccion) {
   switch (direccion) {
     case 'up':
-      usr.posY -= 0.5;
+      if (usr.posY < 50 && usr.posY > -1) {
+        usr.posY -= 0.5;
+      }
       break;
     case 'right':
-      usr.posX += 0.5;
+      if (usr.posX < 22 && usr.posX > -1) {
+        usr.posX += 0.5;
+      }
       break;
     case 'down':
-      usr.posY += 0.5;
+      if (usr.posY < 50 && usr.posY > -1) {
+        usr.posY += 0.5;
+      }
       break;
     case 'left':
-      usr.posX -= 0.5;
+      if (usr.posX < 22 && usr.posX > -1) {
+        usr.posX -= 0.5;
+      }
       break;
   }
   docRef.update(usr.getDictionary());
