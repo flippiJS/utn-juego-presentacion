@@ -61,15 +61,15 @@ function Awake() {
 }
 
 function Entrar() {
-  DoSomethingFirebase();
+  Iniciar();
 }
 
-async function DoSomethingFirebase() {
+async function Iniciar() {
   if (input.value === "") {
     return;
   }
   panel.style.display = "none";
-  initPad();
+  InitPad();
   docRef = db.collection("usuarios").doc(input.value);
   text.textContent = input.value;
   //Date.now()
@@ -82,72 +82,24 @@ async function DoSomethingFirebase() {
   const unsubscribe = query.onSnapshot((snapshot) => {
     snapshot.docChanges().forEach((change) => {
       if (change.type === "added") {
-        const nuevoUsuario = change.doc.data();
-        if (usr.uid !== nuevoUsuario.uid) {
-          console.log(nuevoUsuario);
-          let esta = false;
-          for (let i = 0; i < usuarios.length; i++) {
-            if (usuarios[i].uid === nuevoUsuario.uid) {
-              esta = true;
-              if (nuevoUsuario.conectado) {
-                usuarios[i].style.left = nuevoUsuario.posX + "em";
-                usuarios[i].style.top = nuevoUsuario.posY + "em";
-              } else {
-                usuarios.splice(i, 1);
-                document.getElementById(nuevoUsuario.uid).remove();
-              }
-            }
-          }
-          if (!esta) {
-            if (!nuevoUsuario.conectado) {
-              return;
-            }
-            let go = plantillaUsuario.cloneNode(true);
-            go.id = nuevoUsuario.uid;
-            go.style.position = "absolute";
-            go.style.display = "block";
-            go.style.left = nuevoUsuario.posX + "em";
-            go.style.top = nuevoUsuario.posY + "em";
-            let txt = text.cloneNode(true);
-            txt.textContent = nuevoUsuario.nombre;
-            usuarios.push(go);
-            go.appendChild(txt);
-            document.body.appendChild(go);
-          }
-        }
-        ReproducirSonido();
+        ManejarNuevoUsuario(change.doc.data());
       }
       if (change.type === "modified") {
-        const usuarioModificado = change.doc.data();
-        console.log(usuarioModificado);
-        if (usr.uid !== usuarioModificado.uid) {
-          usuarios = usuarios.map((usuario) =>
-            usuario.uid === usuarioModificado.uid ? usuarioModificado : usuario
-          );
-          // Obtener las nuevas coordenadas desde el cambio
-          const nuevaPosX = usuarioModificado.posX; // Asumiendo que el campo se llama "posX"
-          const nuevaPosY = usuarioModificado.posY; // Asumiendo que el campo se llama "posY"
-
-          // Seleccionar el elemento en el DOM
-          const elementoMovible = document.getElementById(usuarioModificado.uid);
-
-          // Actualizar las propiedades de posición en el estilo del elemento
-          elementoMovible.style.left = nuevaPosX + "em";
-          elementoMovible.style.top = nuevaPosY + "em";
-        }
+        ManejarUsuarioModificado(change.doc.data());
       }
       if (change.type === "removed") {
         const usuarioEliminado = change.doc.data();
-        console.log(usuarioEliminado);
         usuarios = usuarios.filter((usuario) =>
           usuario.uid !== usuarioEliminado.uid
         );
+        console.log(usuarioEliminado);
+        ReproducirSonido(2);
       }
     });
   });
 }
 
-function initPad() {
+function InitPad() {
   control.style.display = "block";
   character.style.display = "block";
   control.addEventListener("click", function (event) {
@@ -203,7 +155,111 @@ function Move(direccion) {
   character.style.top = usr.posY + "em";
 }
 
-function ReproducirSonido() {
-  var audio = new Audio('../assets/sounds/connected.mp3');
+function ReproducirSonido(key) {
+  let url = '../assets/sounds/';
+  switch (key) {
+    case 1:
+      url = url + 'connected.mp3';
+      break;
+    case 2:
+      url = url + 'disconnected.mp3';
+      break;
+    default:
+      break;
+  }
+  const audio = new Audio(url);
   audio.play();
 }
+
+// Función para desconectar al usuario antes de cerrar la ventana o cambiar de página
+function Desconectar() {
+  if (usr) {
+    usr.conectado = false;
+    docRef.update(usr.getDictionary());
+    console.log("Usuario desconectado " + usr.uid);
+  }
+}
+
+// Agregar un event listener para el evento beforeunload
+window.addEventListener('beforeunload', Desconectar);
+
+// ... (código anterior)
+
+// Función para manejar un nuevo usuario añadido
+function ManejarNuevoUsuario(nuevoUsuario) {
+  if (usr.uid !== nuevoUsuario.uid) {
+    console.log(nuevoUsuario);
+    let esta = false;
+    for (let i = 0; i < usuarios.length; i++) {
+      if (usuarios[i].uid === nuevoUsuario.uid) {
+        esta = true;
+        if (nuevoUsuario.conectado) {
+          usuarios[i].style.left = nuevoUsuario.posX + "em";
+          usuarios[i].style.top = nuevoUsuario.posY + "em";
+        } else {
+          usuarios.splice(i, 1);
+          document.getElementById(nuevoUsuario.uid).remove();
+        }
+      }
+    }
+    if (!esta && nuevoUsuario.conectado) {
+      let go = plantillaUsuario.cloneNode(true);
+      go.id = nuevoUsuario.uid;
+      go.style.position = "absolute";
+      go.style.display = "block";
+      go.style.left = nuevoUsuario.posX + "em";
+      go.style.top = nuevoUsuario.posY + "em";
+      let txt = text.cloneNode(true);
+      txt.textContent = nuevoUsuario.nombre;
+      usuarios.push(go);
+      go.appendChild(txt);
+      document.body.appendChild(go);
+    }
+    ReproducirSonido(1);
+  }
+}
+
+// Función para manejar un usuario modificado
+function ManejarUsuarioModificado(usuarioModificado) {
+  if (usr.uid !== usuarioModificado.uid) {
+    if (usuarioModificado.conectado) {
+      usuarios = usuarios.map((usuario) =>
+        usuario.uid === usuarioModificado.uid ? usuarioModificado : usuario
+      );
+      const nuevaPosX = usuarioModificado.posX;
+      const nuevaPosY = usuarioModificado.posY;
+      const elementoMovible = document.getElementById(usuarioModificado.uid);
+      if (elementoMovible) {
+        elementoMovible.style.left = nuevaPosX + "em";
+        elementoMovible.style.top = nuevaPosY + "em";
+      } else {
+        // Si no encontramos el elemento en el DOM, lo creamos y añadimos
+        let go = plantillaUsuario.cloneNode(true);
+        go.id = usuarioModificado.uid;
+        go.style.position = "absolute";
+        go.style.display = "block";
+        go.style.left = nuevaPosX + "em";
+        go.style.top = nuevaPosY + "em";
+        let txt = text.cloneNode(true);
+        txt.textContent = usuarioModificado.nombre;
+        usuarios.push(go);
+        go.appendChild(txt);
+        document.body.appendChild(go);
+      }
+    } else {
+      const elementoRemovido = document.getElementById(usuarioModificado.uid);
+      if (elementoRemovido) {
+        elementoRemovido.remove();
+        ReproducirSonido(2);
+      }
+    }
+  }
+}
+
+// ...
+
+// En el callback de onSnapshot
+
+
+
+// ... (código posterior)
