@@ -115,6 +115,7 @@ async function DoSomethingFirebase() {
             document.body.appendChild(go);
           }
         }
+        ReproducirSonido();
       }
       if (change.type === "modified") {
         const usuarioModificado = change.doc.data();
@@ -177,22 +178,22 @@ function initPad() {
 function Move(direccion) {
   switch (direccion) {
     case 'up':
-      if (usr.posY < 50 && usr.posY > -2) {
+      if (usr.posY > 0) {
         usr.posY -= 0.5;
       }
       break;
     case 'right':
-      if (usr.posX < 22 && usr.posX > -2) {
+      if (usr.posX < 22) {
         usr.posX += 0.5;
       }
       break;
     case 'down':
-      if (usr.posY < 50 && usr.posY > -2) {
+      if (usr.posY < 50) {
         usr.posY += 0.5;
       }
       break;
     case 'left':
-      if (usr.posX < 22 && usr.posX > -2) {
+      if (usr.posX > 0) {
         usr.posX -= 0.5;
       }
       break;
@@ -202,7 +203,7 @@ function Move(direccion) {
   character.style.top = usr.posY + "em";
 }
 
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
+function ReproducirSonido() {
+  var audio = new Audio('../assets/sounds/connected.mp3');
+  audio.play();
 }
-

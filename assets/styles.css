@@ -110,4 +110,5 @@ button:hover {
     margin-top: 50px;
     color: white;
     font-weight: 600;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
