@@ -70,7 +70,7 @@ async function Iniciar() {
   }
   panel.style.display = "none";
   InitPad();
-  docRef = db.collection("usuarios").doc(input.value);
+  docRef = db.collection("usuarios").doc();
   text.textContent = input.value;
   //Date.now()
   usr = new Usuario(input.value, input.value, 12, 20);
