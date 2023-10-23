@@ -73,7 +73,9 @@ async function DoSomethingFirebase() {
   docRef = db.collection("usuarios").doc(input.value);
   text.textContent = input.value;
   //Date.now()
-  usr = new Usuario(input.value, input.value, 0, 0);
+  usr = new Usuario(input.value, input.value, 12, 20);
+  character.style.left = usr.posX + "em";
+  character.style.top = usr.posY + "em";
   await docRef.set(usr.getDictionary());
 
   const query = db.collection("usuarios");
@@ -175,22 +177,22 @@ function initPad() {
 function Move(direccion) {
   switch (direccion) {
     case 'up':
-      if (usr.posY < 50 && usr.posY > -1) {
+      if (usr.posY < 50 && usr.posY > -2) {
         usr.posY -= 0.5;
       }
       break;
     case 'right':
-      if (usr.posX < 22 && usr.posX > -1) {
+      if (usr.posX < 22 && usr.posX > -2) {
         usr.posX += 0.5;
       }
       break;
     case 'down':
-      if (usr.posY < 50 && usr.posY > -1) {
+      if (usr.posY < 50 && usr.posY > -2) {
         usr.posY += 0.5;
       }
       break;
     case 'left':
-      if (usr.posX < 22 && usr.posX > -1) {
+      if (usr.posX < 22 && usr.posX > -2) {
         usr.posX -= 0.5;
       }
       break;
@@ -200,5 +202,7 @@ function Move(direccion) {
   character.style.top = usr.posY + "em";
 }
 
-// Resto del código
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
 

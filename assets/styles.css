@@ -6,7 +6,7 @@ html {
     justify-content: center;
     align-items: center;
     font-family: sans-serif;
-    max-width: 400px; /* Fija el ancho máximo */
+    max-width: 450px; /* Fija el ancho máximo */
 }
 body {
     height: 100%;
@@ -88,7 +88,7 @@ button:hover {
 
 #control {
     position: fixed;
-    bottom: 20%;
+    bottom: 10%;
     display: none;
 }
 
