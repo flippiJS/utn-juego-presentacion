@@ -15,7 +15,7 @@ class MessageManager {
             return;
         }
         const docRef = this.instance.collection("mensajes").doc();
-        const mensaje = new Mensaje(this.usuario.Uid, this.usuario.Nombre, this.input.value);
+        const mensaje = new Mensaje(this.usuario.uid, this.usuario.nombre, this.input.value);
         docRef.set(mensaje.getDictionary());
         this.input.value = "";
     }
@@ -26,7 +26,8 @@ class MessageManager {
         const query = this.instance.collection("mensajes").orderBy("fecha");
         query.onSnapshot((snapshot) => {
             snapshot.docChanges().forEach((change) => {
-                const nuevoMensaje = new Mensaje(change.doc.data());
+                const msj = change.doc.data();
+                const nuevoMensaje = new Mensaje(msj.senderID, msj.nombre, msj.mensaje);
 
                 let esta = false;
                 for (let i = 0; i < this.mensajes.length; i++) {
@@ -49,20 +50,16 @@ class MessageManager {
                     this.mensajes.push(go);
                 }
             });
-
-            if (this.mensajes.length > 8) {
-               // this.messagesContainer.style.maxHeight = `${(this.mensajes.length - 8) * 150}px`;
-            }
         });
     }
 }
 
 class Mensaje {
-    constructor(doc) {
-        this.senderID = doc.uid || '';
-        this.nombre = doc.nombre || '';
-        this.mensaje = doc.mensaje || '';
-        this.fecha = doc.fecha || Date.now();
+    constructor(uid, nombre, mensaje) {
+        this.senderID = uid;
+        this.nombre = nombre;
+        this.mensaje = mensaje;
+        this.fecha = Date.now();
     }
 
     get SenderId() {

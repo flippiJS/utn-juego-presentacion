@@ -78,8 +78,7 @@ async function Iniciar() {
   panel.style.display = "none";
   docRef = db.collection("usuarios").doc();
   text.textContent = input.value;
-  //Date.now()
-  usr = new Usuario(input.value, input.value, 12, 20);
+  usr = new Usuario(docRef.id, input.value, 12, 20);
   messageManager.initiateMessageService(usr);
   character.style.left = usr.posX + "em";
   character.style.top = usr.posY + "em";
@@ -157,10 +156,7 @@ function InitChat() {
   sendBtn.addEventListener('click', function () {
       const messageText = messageInput.value.trim();
       if (messageText !== '') {
-          const messageDiv = document.createElement('div');
-          messageDiv.textContent = messageText;
-          messagesContainer.appendChild(messageDiv);
-          messageInput.value = '';
+        messageManager.onMessageSend();
       }
   });
 }
