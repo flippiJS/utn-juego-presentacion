@@ -28,12 +28,45 @@
         </div>
     </div>
 
+    <!--     <div id="chatOverlay" class="overlay-chat">
+        <div id="messages-container" class="messages-container">
+            <div id="message">
+                <div class="message-container">
+                    <div class="message"></div>
+                    <div class="message-bubble"></div>
+                </div>
+            </div>
+            <input type="text" id="message-input">
+            <button onclick="onMessageSend()">Enviar</button>
+        </div>
+    </div>
+ -->
+    <div id="chatOverlay" class="overlay-chat">
+        <div class="container-chat">
+            <div id="messages-container" class="messages-container">
+                <div id="message">
+                    <div class="message-container">
+                        <div class="message"></div>
+                        <div class="message-bubble"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-container">
+                <img id="chatClose" src="./assets/sprites/chat icon.png" alt="Cerrar Chat">
+                <input type="text" id="message-input" placeholder="Mensaje...">
+                <button onclick="onMessageSend()" id="sendBtn">Enviar</button>
+            </div>
 
+        </div>
+    </div>
     <div id="character">
         <div class="text" id="text"></div>
     </div>
     <div id="plantillaUsuario" class="usuario"></div>
     <img id="control" src="./assets/sprites/dpad.png" alt="Mover">
+    <img id="chatOpen" src="./assets/sprites/chat icon.png" alt="Abrir Chat">
+
+    <script src="./assets/js/chat.js"></script>
     <script src="./assets/js/game.js"></script>
 </body>
 

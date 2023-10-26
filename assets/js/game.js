@@ -48,6 +48,7 @@ const db = firebase.firestore(app);
 let character = document.getElementById('character');
 let plantillaUsuario = document.getElementById('plantillaUsuario');
 let control = document.getElementById('control');
+
 let usuarios = [];
 
 let panel = document.getElementById('panel');
@@ -56,24 +57,30 @@ let text = document.getElementById('text');
 let usr;
 let docRef;
 
+// Crea una instancia de MessageManager
+const messageManager = new MessageManager();
+
 function Awake() {
   usuarios = [];
 }
 
 function Entrar() {
   Iniciar();
+  InitPad();
+  InitChat();
 }
 
 async function Iniciar() {
+
   if (input.value === "") {
     return;
   }
   panel.style.display = "none";
-  InitPad();
   docRef = db.collection("usuarios").doc();
   text.textContent = input.value;
   //Date.now()
   usr = new Usuario(input.value, input.value, 12, 20);
+  messageManager.initiateMessageService(usr);
   character.style.left = usr.posX + "em";
   character.style.top = usr.posY + "em";
   await docRef.set(usr.getDictionary());
@@ -102,6 +109,7 @@ async function Iniciar() {
 function InitPad() {
   control.style.display = "block";
   character.style.display = "block";
+
   control.addEventListener("click", function (event) {
     var rect = this.getBoundingClientRect();
     var x = event.clientX - rect.left;
@@ -124,6 +132,36 @@ function InitPad() {
       console.log("Haz clic en la flecha hacia abajo");
       Move('down');
     }
+  });
+}
+
+function InitChat() {
+  const chatBtn = document.getElementById('chatOpen');
+  const chatBtnClose = document.getElementById('chatClose');
+
+  const chatOverlay = document.getElementById('chatOverlay');
+  chatBtn.style.display = 'block';
+
+  chatBtn.addEventListener("click", function (event) {
+    chatOverlay.style.display = 'block';
+  });
+
+  chatBtnClose.addEventListener("click", function (event) {
+    chatOverlay.style.display = 'none';
+  });
+
+  const sendBtn = document.getElementById('sendBtn');
+  const messagesContainer = document.getElementById('messages-container');
+  const messageInput = document.getElementById('message-input');
+
+  sendBtn.addEventListener('click', function () {
+      const messageText = messageInput.value.trim();
+      if (messageText !== '') {
+          const messageDiv = document.createElement('div');
+          messageDiv.textContent = messageText;
+          messagesContainer.appendChild(messageDiv);
+          messageInput.value = '';
+      }
   });
 }
 
