@@ -73,7 +73,7 @@ class Mensaje {
         this.senderID = uid;
         this.nombre = nombre;
         this.mensaje = mensaje;
-        this.fecha = Date.now();
+        this.fecha = Date.now() - 1440000;
     }
 
     get SenderId() {
