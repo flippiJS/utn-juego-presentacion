@@ -18,15 +18,6 @@ class Usuario {
       plataforma: this.plataforma
     };
   }
-  /* 
-      constructor(diccionario) {
-          this.uid = diccionario.uid;
-          this.nombre = diccionario.nombre;
-          this.posX = diccionario.posX;
-          this.posY = diccionario.posY;
-          this.conectado = diccionario.conectado;
-          this.plataforma = diccionario.plataforma;
-      } */
 
   toString() {
     return this.uid + " - " + this.nombre;
@@ -154,10 +145,10 @@ function InitChat() {
   const messageInput = document.getElementById('message-input');
 
   sendBtn.addEventListener('click', function () {
-      const messageText = messageInput.value.trim();
-      if (messageText !== '') {
-        messageManager.onMessageSend();
-      }
+    const messageText = messageInput.value.trim();
+    if (messageText !== '') {
+      messageManager.onMessageSend();
+    }
   });
 }
 
@@ -206,18 +197,20 @@ function ReproducirSonido(key) {
 }
 
 // Función para desconectar al usuario antes de cerrar la ventana o cambiar de página
-function Desconectar() {
+async function Desconectar(event) {
+
   if (usr) {
     usr.conectado = false;
     docRef.update(usr.getDictionary());
     console.log("Usuario desconectado " + usr.uid);
   }
+  const message = "Por favor espera, se están guardando los datos...";
+  event.returnValue = message;
+  return message;
 }
 
 // Agregar un event listener para el evento beforeunload
 window.addEventListener('beforeunload', Desconectar);
-
-// ... (código anterior)
 
 // Función para manejar un nuevo usuario añadido
 function ManejarNuevoUsuario(nuevoUsuario) {
@@ -290,6 +283,17 @@ function ManejarUsuarioModificado(usuarioModificado) {
   }
 }
 
+
+function handleKeyPress(e) {
+  var key = e.keyCode || e.which;
+  if (key == 13) {
+    const messageInput = document.getElementById('message-input');
+    const messageText = messageInput.value.trim();
+    if (messageText !== '') {
+      messageManager.onMessageSend();
+    }
+  }
+}
 // ...
 
 // En el callback de onSnapshot

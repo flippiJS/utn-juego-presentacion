@@ -23,7 +23,7 @@ class MessageManager {
     initiateMessageService(usr) {
         this.instance = firebase.firestore();
         this.usuario = usr;
-        const query = this.instance.collection("mensajes").orderBy("fecha");
+        const query = this.instance.collection("mensajes").orderBy("fecha", 'desc');
         query.onSnapshot((snapshot) => {
             snapshot.docChanges().forEach((change) => {
                 const msj = change.doc.data();
@@ -38,16 +38,30 @@ class MessageManager {
                 if (!esta) {
                     const go = this.plantillaMensaje.cloneNode(true);
                     this.messagesContainer.appendChild(go);
-                    go.querySelector(".message").textContent = nuevoMensaje.MensajeP;
-                    if (nuevoMensaje.SenderId === this.usuario.Uid) {
-                        go.querySelector(".message-container").style.textAlign = "right";
-                        go.querySelector(".message-bubble").style.backgroundImage = `url(${this.messageRight})`;
+
+                    // Crear un nuevo elemento div para mostrar el nombre del usuario
+                    const userNameDiv = document.createElement('div');
+                    userNameDiv.classList.add('message-user');
+                    userNameDiv.textContent = nuevoMensaje.Nombre;
+
+                    // Crear un nuevo elemento div para mostrar el nombre del usuario
+                    const userTextDiv = document.createElement('div');
+                    userTextDiv.classList.add('message-txt');
+                    userTextDiv.textContent = nuevoMensaje.MensajeP;
+
+                    // Añadir el nombre del usuario al contenedor de mensajes
+                    go.querySelector(".message").appendChild(userNameDiv);
+                    go.querySelector(".message").appendChild(userTextDiv);
+
+
+                    if (nuevoMensaje.SenderId === this.usuario.uid) {
+                        go.querySelector(".message-container").classList.add("end");
                     } else {
-                        go.querySelector(".message-container").style.textAlign = "left";
-                        go.querySelector(".message-bubble").style.backgroundImage = `url(${this.messageLeft})`;
+                        go.querySelector(".message-container").classList.add("start");
                     }
                     go.id = change.doc.id;
                     this.mensajes.push(go);
+                    this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
                 }
             });
         });

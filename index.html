@@ -47,13 +47,12 @@
                 <div id="message">
                     <div class="message-container">
                         <div class="message"></div>
-                        <div class="message-bubble"></div>
                     </div>
                 </div>
             </div>
             <div class="input-container">
                 <img id="chatClose" src="./assets/sprites/chat icon.png" alt="Cerrar Chat">
-                <input type="text" id="message-input" placeholder="Mensaje...">
+                <input type="text" id="message-input" onkeypress="handleKeyPress(event)" placeholder="Mensaje...">
                 <button id="sendBtn">Enviar</button>
             </div>
 
